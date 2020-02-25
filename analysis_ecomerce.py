@@ -3,7 +3,7 @@ import xgboost
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
-from datatime import datatime
+from datetime import datetime
 from sklearn.model_selection import train_test_split
 import pickle
 #https://www.kaggle.com/retailrocket/ecommerce-dataset/download
@@ -100,7 +100,7 @@ target=np.array(target)
 ll=[i for i in range(len(target)) if target[i]==1]
 l2=[i for i in range(len(target)) if train.availability[i]!=2]
 tr=list(set([i for i in range(int(n*len(ll)))]).intersection(set(l2)))+list(set(ll).intersection(set(l2)))*n
-trdata=data.iloc[tr,:]
+trdata=data.iloc[tr,[2,3,4,5,7]]
 trtarget=target[tr]
 trainX,testX,trainY,testY=train_test_split(trdata,trtarget,test_size=0.15, random_state=1)
 
@@ -112,7 +112,7 @@ xgmodel.score(testX,testY)
 #0.79
 cm=one_hot_encode(testY).T.dot(one_hot_encode(Y))
 cm=pd.DataFrame(cm, columns=['pred_view','pred_addtocart'], index=['true_view','true_addtocart'])
-cm['%error']=[cm.iloc[i,i]/cm.iloc[i,:].sum() for i in range(cm.shape[0])]
+cm.loc['class_accuracy',:]=[cm.iloc[i,i]/cm.iloc[:,i].sum() for i in range(cm.shape[1])]
 cm.to_csv('confusion_matrix.csv')
 
 
